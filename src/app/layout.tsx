@@ -49,8 +49,13 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <BackToTopButton />
         </div>
       </body>
+    </html>
+  );
+}
+   </body>
     </html>
   );
 }
