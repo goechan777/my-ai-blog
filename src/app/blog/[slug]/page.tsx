@@ -29,9 +29,10 @@ async function getPost(slug: string) {
   }
 }
 
-// Page Propsの型定義をNext.jsの仕様に合わせて修正
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
+// paramsをPromiseとして扱い、awaitで解決するよう修正
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getPost(slug);
 
   if (!post) {
     notFound();
