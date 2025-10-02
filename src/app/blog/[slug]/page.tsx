@@ -7,8 +7,15 @@ import remarkHtml from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import matter from 'gray-matter';
 
+// Postの型を明示的に定義
+interface PostData {
+  title: string;
+  date: string;
+  [key: string]: any;
+}
+
 // 投稿を取得する関数
-async function getPost(slug: string) {
+async function getPost(slug: string): Promise<(PostData & { contentHtml: string }) | null> {
   const postsDirectory = path.join(process.cwd(), 'src/articles');
   const filePath = path.join(postsDirectory, `${slug}.md`);
 
@@ -23,7 +30,7 @@ async function getPost(slug: string) {
       .process(content);
     const contentHtml = processedContent.toString();
 
-    return { ...data, contentHtml, date: data.date || new Date().toISOString() };
+    return { ...(data as PostData), contentHtml };
   } catch {
     return null;
   }
