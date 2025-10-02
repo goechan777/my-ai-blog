@@ -5,7 +5,7 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkHtml from 'remark-html';
 import remarkGfm from 'remark-gfm';
-import matter from 'gray-matter'; // gray-matterをインポート
+import matter from 'gray-matter';
 
 // 投稿を取得する関数
 async function getPost(slug: string) {
@@ -14,11 +14,8 @@ async function getPost(slug: string) {
 
   try {
     const fileContent = await fs.readFile(filePath, 'utf8');
-    
-    // gray-matterを使ってメタデータとコンテンツを分離
     const { data, content } = matter(fileContent);
 
-    // MarkdownをHTMLに変換
     const processedContent = await unified()
       .use(remarkParse)
       .use(remarkGfm)
@@ -26,7 +23,7 @@ async function getPost(slug: string) {
       .process(content);
     const contentHtml = processedContent.toString();
 
-    return { ...data, contentHtml }; // メタデータとHTMLコンテンツを返す
+    return { ...data, contentHtml, date: data.date || new Date().toISOString() };
   } catch (error) {
     return null;
   }
@@ -40,9 +37,17 @@ export default async function PostPage({ params }: { params: { slug: string } })
   }
 
   return (
-    <article className="prose dark:prose-invert lg:prose-xl mx-auto p-8">
-      <h1>{post.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+    <article className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">{post.title}</h1>
+        <p className="mt-4 text-base text-gray-500 dark:text-gray-400">
+          公開日: {new Date(post.date).toLocaleDateString('ja-JP')}
+        </p>
+      </div>
+      <div 
+        className="prose dark:prose-invert lg:prose-xl max-w-none"
+        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+      />
     </article>
   );
 }
