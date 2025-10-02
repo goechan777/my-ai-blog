@@ -13,7 +13,6 @@ async function getPosts() {
       const fileContents = await fs.readFile(filePath, 'utf8');
       const { data, content } = matter(fileContents);
       
-      // 抜粋を生成（コンテンツの最初の100文字）
       const excerpt = content.substring(0, 100).replace(/\n/g, ' ') + '...';
 
       return {
@@ -23,10 +22,8 @@ async function getPosts() {
         excerpt: excerpt,
       };
     }));
-    // 日付の新しい順にソート
     return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  } catch (error) {
-    console.error("Could not read articles directory:", error);
+  } catch {
     return [];
   }
 }

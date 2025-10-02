@@ -7,6 +7,11 @@ import remarkHtml from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import matter from 'gray-matter';
 
+// Propsの型定義を修正
+type Props = {
+  params: { slug: string };
+};
+
 // 投稿を取得する関数
 async function getPost(slug: string) {
   const postsDirectory = path.join(process.cwd(), 'src/articles');
@@ -24,12 +29,13 @@ async function getPost(slug: string) {
     const contentHtml = processedContent.toString();
 
     return { ...data, contentHtml, date: data.date || new Date().toISOString() };
-  } catch (error) {
+  } catch {
+    // error変数を削除
     return null;
   }
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
+export default async function PostPage({ params }: Props) { // 修正したProps型を使用
   const post = await getPost(params.slug);
 
   if (!post) {
@@ -60,7 +66,8 @@ export async function generateStaticParams() {
     return filenames.map((filename) => ({
       slug: filename.replace(/\.md$/, ''),
     }));
-  } catch (error) {
+  } catch {
+    // error変数を削除
     return [];
   }
 }
