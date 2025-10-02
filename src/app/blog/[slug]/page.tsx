@@ -11,7 +11,7 @@ import matter from 'gray-matter';
 interface PostData {
   title: string;
   date: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // 投稿を取得する関数
