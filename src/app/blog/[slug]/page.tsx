@@ -7,11 +7,6 @@ import remarkHtml from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import matter from 'gray-matter';
 
-// Propsの型定義を修正
-type Props = {
-  params: { slug: string };
-};
-
 // 投稿を取得する関数
 async function getPost(slug: string) {
   const postsDirectory = path.join(process.cwd(), 'src/articles');
@@ -30,12 +25,12 @@ async function getPost(slug: string) {
 
     return { ...data, contentHtml, date: data.date || new Date().toISOString() };
   } catch {
-    // error変数を削除
     return null;
   }
 }
 
-export default async function PostPage({ params }: Props) { // 修正したProps型を使用
+// Page Propsの型定義をNext.jsの仕様に合わせて修正
+export default async function PostPage({ params }: { params: { slug: string } }) {
   const post = await getPost(params.slug);
 
   if (!post) {
@@ -67,7 +62,6 @@ export async function generateStaticParams() {
       slug: filename.replace(/\.md$/, ''),
     }));
   } catch {
-    // error変数を削除
     return [];
   }
 }
