@@ -17,6 +17,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI活用ブログ（仮） | 最新AIツールの使い方を学ぶ",
   description: "非エンジニアでもわかる、最新AIツールの使い方や活用事例、ニュースを解説するブログです。",
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: "https://my-ai-blog-smoky.vercel.app/",
+    siteName: "AI活用ブログ（仮）",
+    images: [
+      {
+        url: "/ogp-default.svg",
+        width: 1200,
+        height: 630,
+        alt: "AI活用ブログ（仮）",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

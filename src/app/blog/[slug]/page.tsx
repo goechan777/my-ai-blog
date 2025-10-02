@@ -6,12 +6,41 @@ import remarkParse from 'remark-parse';
 import remarkHtml from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import matter from 'gray-matter';
+import { Metadata } from 'next';
 
 // Postの型を明示的に定義
 interface PostData {
   title: string;
   date: string;
   [key: string]: unknown;
+}
+
+// メタデータ生成関数
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPost(params.slug);
+  if (!post) {
+    return {};
+  }
+  const excerpt = post.contentHtml.replace(/<[^>]*>/g, '').substring(0, 120);
+  return {
+    title: post.title,
+    description: excerpt,
+    openGraph: {
+      title: post.title,
+      description: excerpt,
+      type: 'article',
+      publishedTime: post.date,
+      url: `https://my-ai-blog-smoky.vercel.app/blog/${params.slug}`,
+      images: [
+        {
+          url: "/ogp-default.svg", // TODO: 各記事のOGP画像を動的に生成する
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+  };
 }
 
 // 投稿を取得する関数
