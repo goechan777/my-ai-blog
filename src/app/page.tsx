@@ -1,4 +1,32 @@
-export default function Home() {
+import Link from 'next/link';
+import { promises as fs } from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+// 投稿一覧を取得する関数
+async function getPosts() {
+  const postsDirectory = path.join(process.cwd(), 'src/articles');
+  try {
+    const filenames = await fs.readdir(postsDirectory);
+    const posts = await Promise.all(filenames.map(async (filename) => {
+      const filePath = path.join(postsDirectory, filename);
+      const fileContents = await fs.readFile(filePath, 'utf8');
+      const { data } = matter(fileContents);
+      return {
+        slug: filename.replace(/\.md$/, ''),
+        title: data.title || '無題の投稿',
+      };
+    }));
+    return posts;
+  } catch (error) {
+    console.error("Could not read articles directory:", error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  const posts = await getPosts();
+
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <div className="text-center">
@@ -15,10 +43,23 @@ export default function Home() {
           最新記事
         </h2>
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8">
-          {/* 今後、ここに記事の一覧が動的に表示されます */}
-          <p className="text-gray-500 dark:text-gray-400">
-            ここに記事の一覧が表示されます。
-          </p>
+          {posts.length > 0 ? (
+            <ul>
+              {posts.map(post => (
+                <li key={post.slug} className="py-4">
+                  <Link href={`/blog/${post.slug}`}>
+                    <span className="text-xl font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                      {post.title}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400">
+              まだ記事がありません。
+            </p>
+          )}
         </div>
       </div>
     </main>
