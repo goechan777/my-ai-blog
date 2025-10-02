@@ -17,8 +17,7 @@ interface PostData {
 
 // メタデータ生成関数
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getPost(params.slug);
   if (!post) {
     return {};
   }
@@ -31,7 +30,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: excerpt,
       type: 'article',
       publishedTime: post.date,
-      url: `https://my-ai-blog-smoky.vercel.app/blog/${slug}`,
+      url: `https://my-ai-blog-smoky.vercel.app/blog/${params.slug}`,
       images: [
         {
           url: "/ogp-default.svg", // TODO: 各記事のOGP画像を動的に生成する
